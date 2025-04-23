@@ -1,0 +1,1 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/6xh9aa84egwabc0m?svg=true)](https://ci.appveyor.com/project/Dimmidro11/page-object)
