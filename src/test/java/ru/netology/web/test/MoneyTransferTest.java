@@ -20,7 +20,7 @@ class MoneyTransferTest {
         // Подготавливаем среду для тестирования - открываем необходимый ресурс,
         // авторизируемся, вводим код верификации, заводим вспомогательные переменные
         open("http://localhost:9999");
-        var loginPage = new LoginPageV2();
+        var loginPage = new LoginPage();
         var authInfo = DataHelper.getAuthInfo();
         var verificationPage = loginPage.validLogin(authInfo);
         var verificationCode = DataHelper.getVerificationCodeFor(authInfo);
@@ -42,15 +42,15 @@ class MoneyTransferTest {
         var transferPage = dashboardPage.selectCard(secondCard);
 
         // Совершаем перевод с желаемой карты на выбранную
-        transferPage.transferFromFirstCard(transferAmount);
+        dashboardPage = transferPage.confirmTransfer(transferAmount, firstCard.getNumber());
 
         // Сохраняем конечные балансы карты в переменные
         var finalBalance1 = dashboardPage.getCardBalance(firstCard);
         var finalBalance2 = dashboardPage.getCardBalance(secondCard);
 
         // Сравниваем корректность балансов после перевода
-        Assertions.assertTrue(dashboardPage.
-                compareBalance(transferAmount, openingBalance2, finalBalance2, openingBalance1, finalBalance1));
+        assertEquals(openingBalance1 - transferAmount, finalBalance1);
+        assertEquals(openingBalance2 + transferAmount, finalBalance2);
     }
 
     @Test
@@ -65,7 +65,7 @@ class MoneyTransferTest {
         var transferPage = dashboardPage.selectCard(firstCard);
 
         // Совершаем перевод с желаемой карты на выбранную
-        transferPage.transferFromFirstCard(transferAmount);
+        dashboardPage = transferPage.confirmTransfer(transferAmount, firstCard.getNumber());
 
         // Сохраняем конечные балансы карты в переменные
         var finalBalance1 = dashboardPage.getCardBalance(firstCard);
@@ -88,7 +88,7 @@ class MoneyTransferTest {
         var transferPage = dashboardPage.selectCard(firstCard);
 
         // Совершаем перевод с желаемой карты на выбранную
-        transferPage.transferFromSecondCard(transferAmount);
+        dashboardPage = transferPage.confirmTransfer(transferAmount, secondCard.getNumber());
 
         // Проверяем на ошибку
         transferPage.checkErrorTransfer("Ошибка!");
@@ -114,14 +114,15 @@ class MoneyTransferTest {
         var transferPage = dashboardPage.selectCard(firstCard);
 
         // Совершаем перевод с желаемой карты на выбранную
-        transferPage.transferFromSecondCard(transferAmount);
+        dashboardPage = transferPage.confirmTransfer(transferAmount, secondCard.getNumber());
 
         // Сохраняем конечные балансы карты в переменные
         var finalBalance1 = dashboardPage.getCardBalance(firstCard);
         var finalBalance2 = dashboardPage.getCardBalance(secondCard);
 
         // Сравниваем корректность балансов после перевода
-        dashboardPage.compareBalance(transferAmount, openingBalance1, finalBalance1, openingBalance2, finalBalance2);
+        assertEquals(openingBalance1 + transferAmount, finalBalance1);
+        assertEquals(openingBalance2 - transferAmount, finalBalance2);
     }
 
     @Test
@@ -136,7 +137,9 @@ class MoneyTransferTest {
         var transferPage = dashboardPage.selectCard(secondCard);
 
         // Совершаем перевод с желаемой карты на выбранную
-        transferPage.cancelTransferFromFirstCard(transferAmount);
+        transferPage.clearFieldsAndFillingAmount(transferAmount);
+        transferPage.setCardFrom(firstCard.getNumber());
+        dashboardPage = transferPage.cancelTransfer();
 
         // Сохраняем конечные балансы карты в переменные
         var finalBalance1 = dashboardPage.getCardBalance(firstCard);
@@ -159,7 +162,7 @@ class MoneyTransferTest {
         var transferPage = dashboardPage.selectCard(secondCard);
 
         // Совершаем перевод с желаемой карты на выбранную
-        transferPage.transferFromFirstCard(transferAmount);
+        dashboardPage = transferPage.confirmTransfer(transferAmount, firstCard.getNumber());
 
         // Сохраняем конечные балансы карты в переменные
         var finalBalance1 = dashboardPage.getCardBalance(firstCard);

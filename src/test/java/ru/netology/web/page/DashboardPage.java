@@ -42,8 +42,4 @@ public class DashboardPage {
         var value = text.substring(start + balanceStart.length(), finish);
         return Integer.parseInt(value);
     }
-
-    public boolean compareBalance(int amount, int currentBalance, int finalCurrentBalance, int subBalance, int finalSubBalance) {
-        return (currentBalance + amount == finalCurrentBalance) & (subBalance - amount == finalSubBalance);
-    }
 }

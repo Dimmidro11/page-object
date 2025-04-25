@@ -26,58 +26,30 @@ public class TransferPage {
         heading.shouldBe(visible);
     }
 
-    private String fromIntToString(int transferAmount) {
-        return Integer.toString(transferAmount);
-    }
-
-    private void clearFieldsAndFillingAmount(String transferAmount) {
+    public void clearFieldsAndFillingAmount(int transferAmount) {
         amountField.press(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.DELETE);
-        amountField.setValue(transferAmount);
+        amountField.setValue(Integer.toString(transferAmount));
         fromField.press(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.DELETE);
     }
 
-    private void confirmTransfer() {
+    public DashboardPage confirmTransfer(int transferAmount, String cardNumber) {
+        clearFieldsAndFillingAmount(transferAmount);
+        setCardFrom(cardNumber);
         String pngFileName = screenshot("Scrn_transfer_inform_" + Calendar.getInstance().getTimeInMillis());
         transferButton.click();
         String pngFile = screenshot("Scrn_final_balance_" + Calendar.getInstance().getTimeInMillis());
+        return new DashboardPage();
     }
 
-    private void cancelTransfer() {
+    public DashboardPage cancelTransfer() {
         String pngFileName = screenshot("Scrn_transfer_inform_" + Calendar.getInstance().getTimeInMillis());
         cancelButton.click();
         String pngFile = screenshot("Scrn_final_balance_" + Calendar.getInstance().getTimeInMillis());
+        return new DashboardPage();
     }
 
-    private void setFromFirstCard() {
-        fromField.setValue(DataHelper.getFirstCardInfo().getNumber());
-    }
-
-    private void setFromSecondCard() {
-        fromField.setValue(DataHelper.getSecondCardInfo().getNumber());
-    }
-
-    public void transferFromSecondCard(int transferAmount) {
-        clearFieldsAndFillingAmount(fromIntToString(transferAmount));
-        setFromSecondCard();
-        confirmTransfer();
-    }
-
-    public void transferFromFirstCard(int transferAmount) {
-        clearFieldsAndFillingAmount(fromIntToString(transferAmount));
-        setFromFirstCard();
-        confirmTransfer();
-    }
-
-    public void cancelTransferFromFirstCard(int transferAmount) {
-        clearFieldsAndFillingAmount(fromIntToString(transferAmount));
-        setFromFirstCard();
-        cancelTransfer();
-    }
-
-    public void cancelTransferFromSecondCard(int transferAmount) {
-        clearFieldsAndFillingAmount(fromIntToString(transferAmount));
-        setFromSecondCard();
-        cancelTransfer();
+    public void setCardFrom(String cardNumber) {
+        fromField.setValue(cardNumber);
     }
 
     public void checkErrorTransfer(String expectedMessage) {
